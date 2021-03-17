@@ -26,7 +26,10 @@ class _SelectorSource(GLib.Source):
         for (fd, tag) in self._fd_to_tag.items():
             condition = self.query_unix_fd(tag)
             events = self._fd_to_events.setdefault(fd, 0)
-            if condition & GLib.IOCondition.IN:
+            if (
+              condition & GLib.IOCondition.IN
+              or condition & GLib.IOCondition.HUP
+            ):
                 events |= selectors.EVENT_READ
             if condition & GLib.IOCondition.OUT:
                 events |= selectors.EVENT_WRITE
